@@ -1,0 +1,286 @@
+{
+    "description": "a kustomer workflow to get/fetch/pull custom payment receipt from add jvm backend",
+    "name": "poll-payment-invoice",
+    "steps": [
+      {
+        "transitions": [
+          {
+            "target": "aN0X9A2Hc",
+            "condition": {
+              "op": "eq",
+              "values": [
+                "/#steps.1.attributes.data.customer.custom.selectCountryStr",
+                "CO"
+              ]
+            },
+            "meta": {
+              "name": "COLOMBIA"
+            }
+          },
+          {
+            "target": "3VPQulNnp",
+            "condition": {
+              "op": "eq",
+              "values": [
+                "/#steps.1.attributes.data.customer.custom.selectCountryStr",
+                "BR"
+              ]
+            },
+            "meta": {
+              "name": "BRAZIL"
+            }
+          }
+        ],
+        "errorCases": [],
+        "id": "e_r_w7wx8",
+        "action": "kustomer.customer.update",
+        "params": {
+          "id": "/#steps.1.attributes.data.customer.id",
+          "custom": {
+            "loadingBool": true
+          }
+        },
+        "meta": {
+          "displayName": "show is loading"
+        },
+        "appVersion": "kustomer-^1.9.2"
+      },
+      {
+        "transitions": [
+          {
+            "target": "cFiGgpzyt",
+            "condition": {
+              "op": "dne",
+              "values": [
+                "/#steps.aN0X9A2Hc.body.code"
+              ]
+            },
+            "meta": {
+              "name": "On Success"
+            }
+          },
+          {
+            "target": "Pz84VgB5L",
+            "condition": {
+              "op": "and",
+              "values": [
+                {
+                  "op": "exists",
+                  "values": [
+                    "/#steps.aN0X9A2Hc.body.code",
+                    ""
+                  ]
+                },
+                {
+                  "op": "gt",
+                  "values": [
+                    "/#steps.aN0X9A2Hc.response.statusCode",
+                    "200"
+                  ]
+                }
+              ]
+            },
+            "meta": {
+              "name": "On Error"
+            }
+          }
+        ],
+        "errorCases": [],
+        "id": "aN0X9A2Hc",
+        "action": "kustomer.rest-api.json",
+        "params": {
+          "json": true,
+          "headers": {
+            "Authorization": "Basic {{{variables.63da823147407a231b1bbfce}}}"
+          },
+          "uri": "{{{variables.63d19ecab24da0e2e2268462}}}/clients/{{{steps.1.attributes.data.customer.externalId}}}/invoice/reference/{{{steps.1.attributes.data.customer.custom.referenceStr}}}",
+          "method": "GET"
+        },
+        "meta": {
+          "displayName": "Pull Corresponsal PIN"
+        },
+        "appVersion": "kustomer-^1.9.2"
+      },
+      {
+        "transitions": [
+          {
+            "target": "8-gu8QS1s",
+            "condition": {
+              "op": "true",
+              "values": [
+                true
+              ]
+            }
+          }
+        ],
+        "errorCases": [],
+        "id": "cFiGgpzyt"
+      },
+      {
+        "transitions": [],
+        "errorCases": [],
+        "id": "8-gu8QS1s",
+        "action": "kustomer.customer.update",
+        "params": {
+          "id": "/#steps.1.attributes.data.customer.id",
+          "custom": {
+            "generatedTxt": "Convenio={{{steps.aN0X9A2Hc.body.businessAgreementCode}}} \n\nPin={{{steps.aN0X9A2Hc.body.paymentIntentionIdentifier}}}\n\nExpiracion={{{steps.aN0X9A2Hc.body.expirationDate}}}",
+            "loadingBool": false,
+            "amountNum": "/#steps.aN0X9A2Hc.body.amount",
+            "referenceIdEditableBool": false
+          }
+        },
+        "meta": {
+          "displayName": "Update ui"
+        },
+        "appVersion": "kustomer-^1.9.2"
+      },
+      {
+        "transitions": [
+          {
+            "target": "LZr5H-6oK",
+            "condition": {
+              "op": "dne",
+              "values": [
+                "/#steps.3VPQulNnp.body.code"
+              ]
+            },
+            "meta": {
+              "name": "On Success"
+            }
+          },
+          {
+            "target": "lJopoIhZe",
+            "condition": {
+              "op": "or",
+              "values": [
+                {
+                  "op": "exists",
+                  "values": [
+                    "/#steps.3VPQulNnp.body.code",
+                    ""
+                  ]
+                },
+                {
+                  "op": "gt",
+                  "values": [
+                    "/#steps.3VPQulNnp.response.statusCode",
+                    "200"
+                  ]
+                }
+              ]
+            },
+            "meta": {
+              "name": "On Error"
+            }
+          }
+        ],
+        "errorCases": [],
+        "id": "3VPQulNnp",
+        "action": "kustomer.rest-api.json",
+        "params": {
+          "json": true,
+          "uri": "{{{variables.63d9665d8741fba7269516af}}}/payments/pix/{{{steps.1.attributes.data.customer.custom.referenceStr}}}/invoice",
+          "method": "GET",
+          "headers": {
+            "Authorization": "Basic {{{variables.63da823147407a231b1bbfce}}}"
+          }
+        },
+        "meta": {
+          "displayName": "Pull Payment Pix",
+          "description": "fetch payment pix br code "
+        },
+        "appVersion": "kustomer-^1.9.2"
+      },
+      {
+        "transitions": [
+          {
+            "target": "tLUHR2wAQ",
+            "condition": {
+              "op": "true",
+              "values": [
+                true
+              ]
+            }
+          }
+        ],
+        "errorCases": [],
+        "id": "LZr5H-6oK"
+      },
+      {
+        "transitions": [],
+        "errorCases": [],
+        "id": "lJopoIhZe",
+        "action": "kustomer.customer.update",
+        "params": {
+          "id": "/#steps.1.attributes.data.customer.id",
+          "custom": {
+            "loadingBool": false,
+            "generatedTxt": "/#steps.3VPQulNnp.body.message",
+            "referenceIdEditableBool": false
+          }
+        },
+        "meta": {
+          "displayName": "show error"
+        },
+        "appVersion": "kustomer-^1.9.2"
+      },
+      {
+        "transitions": [],
+        "errorCases": [],
+        "id": "Pz84VgB5L",
+        "action": "kustomer.customer.update",
+        "params": {
+          "id": "/#steps.1.attributes.data.customer.id",
+          "custom": {
+            "loadingBool": false,
+            "generatedTxt": "/#steps.aN0X9A2Hc.body.message",
+            "referenceIdEditableBool": false
+          }
+        },
+        "meta": {
+          "displayName": "Show Error"
+        },
+        "appVersion": "kustomer-^1.9.2"
+      },
+      {
+        "transitions": [],
+        "errorCases": [],
+        "id": "tLUHR2wAQ",
+        "action": "kustomer.customer.update",
+        "params": {
+          "id": "/#steps.1.attributes.data.customer.id",
+          "custom": {
+            "generatedTxt": "https://embedded.addi.com.br/pix-info/?pixNumber={{{steps.3VPQulNnp.body.pixNumber}}}&clientId={{{steps.1.attributes.data.customer.externalId}}}",
+            "loadingBool": false,
+            "amountNum": "/#steps.3VPQulNnp.body.amount",
+            "referenceIdEditableBool": false
+          }
+        },
+        "meta": {
+          "displayName": "Update ui",
+          "description": "Update ui"
+        },
+        "appVersion": "kustomer-^1.9.2"
+      }
+    ],
+    "trigger": {
+      "transitions": [
+        {
+          "target": "e_r_w7wx8",
+          "condition": {
+            "op": "true",
+            "values": [
+              true
+            ]
+          }
+        }
+      ],
+      "meta": {
+        "displayName": "pullPaymentReceipt"
+      },
+      "id": "1",
+      "eventName": "kustomer.hooks.form.63d19dea07506a356d06d3e6.receive",
+      "appVersion": "hooks-^1.0.0"
+    }
+  }

@@ -1,0 +1,1 @@
+export const paymentInvoiceKobjectV1 = "payment-invoice-v1";

@@ -8,7 +8,9 @@
   "repository": "https://github.com/kustomer/kustomer-apps-starter-configs",
   "scripts": {
     "get-app-json": "node ./_scripts/get-app-json",
-    "register-new-version": "node ./_scripts/register-new-version"
+    "register-new-version": "node ./_scripts/register-new-version",
+    "stringify-jsx": "node ./_scripts/convert-jsx-to-string",
+    "build": "tsc --project ./"
   },
   "engines": {
     "node": ">=12"
@@ -18,6 +20,17 @@
     "@babel/preset-env": "^7.12.1",
     "@babel/register": "^7.12.1",
     "dotenv": "^8.2.0",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "@types/node": "^18.7.23",
+    "@typescript-eslint/eslint-plugin": "^5.38.1",
+    "@typescript-eslint/parser": "^5.38.1",
+    "eslint": "^8.24.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3"
+  },
+  "dependencies": {
+    "browserslist": "^4.21.5",
+    "uuid": "^9.0.0"
   }
 }
